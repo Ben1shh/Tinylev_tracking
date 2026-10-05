@@ -1,6 +1,6 @@
 # Tinylev Tracking v0.1
 
-NYU Grier Group
+NYU CSMR Grier Lab
 
 Local PyQt desktop app for the trained single-class `particle` YOLO segmentation model.
 
