@@ -1,24 +1,24 @@
-# Release validation
+# Validation
 
-Validated on Windows with Python 3.12 in an independent environment, from the
-repository directory:
+Windows, independent Python 3.12.14 environment:
 
-- 27 manager/core tests passed, including eleven calibration and packaging regression tests.
-- 12 dynamic-analysis synthetic regression tests passed.
-- Fresh GUI initialization and switching to an uncalibrated experiment preserve
-  unset calibration. Zero center coordinates remain valid when entered.
-- Missing calibration cannot generate physical measurements; zero/negative/
-  nonfinite scales are rejected. Unknown center errors are not treated as zero.
-- Existing model hash matches the local current model; the model is not replaced.
+- 16 tests passed: numerical kinematics/spectrum checks, annotation revisions and
+  provenance, full-frame fast output, backend calibration and Tracker GUI checks.
+- Fresh GUI shows Tinylev Tracker v0.5, nine plot modes, manual annotations and
+  unset calibration. Explicit zero center is valid; missing/nonfinite calibration
+  cannot start inference, and choosing a new video clears previous calibration.
+- Existing outputs receive a numbered sibling; annotation revisions preserve prior files.
 - The bundled model loaded and completed CPU inference on a synthetic blank
-  640x640 frame (zero detections). This is a runtime smoke check, not accuracy validation.
-- Validation environment: Python 3.12.14, PyQt5 5.15.11, NumPy 2.5.3,
-  OpenCV 5.0.0.93, pandas 3.0.6, Matplotlib 3.11.2,
-  PyTorch 2.14.1+cpu, torchvision 0.29.1+cpu, Ultralytics 8.4.173.
-- README screenshot is rendered from the actual Qt application with explicitly
-  synthetic, in-memory data by `python docs/create_preview.py`.
+  640x640 frame (zero detections); the actual GUI entry point exited normally.
+- README screenshots use the actual Tracker UI, part02 recording frame 1000 and
+  its existing 51,070-row tracking CSV, loaded read-only. No new tracking or
+  experimental relabeling was performed. Capture with
+  `python docs/create_preview.py --video YOUR_VIDEO --tracking MATCHING_CSV --frame 1000`.
+  Only screenshot images and source metadata are published; inputs remain local.
 
-These tests do not establish experimental tracking accuracy, GPU performance,
-full-video identity continuity or a physical dynamical state. Original experimental
-data and historical analyses are not included or modified. The full manager's
-tracking output directory must be newly chosen for each run to avoid replacement.
+Environment: NumPy 2.5.3, OpenCV 5.0.0.93, PyQt5 5.15.11,
+Matplotlib 3.11.2, PyTorch 2.14.1+cpu, torchvision 0.29.1+cpu,
+Ultralytics 8.4.173. These record the tested environment; requirements use minimum
+versions. GPU use and a full new experimental video have not been validated in
+this release. Synthetic tests do not establish experimental tracking accuracy or
+physical particle identity.

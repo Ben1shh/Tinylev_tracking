@@ -9,7 +9,7 @@ from unittest.mock import patch
 import cv2
 import numpy as np
 
-APP_ROOT = Path(__file__).resolve().parents[1]
+APP_ROOT = Path(__file__).resolve().parents[1] / "analysis" / "particle_tracking_app_v0_1"
 sys.path.insert(0, str(APP_ROOT))
 
 from particle_tracking_app.core import TrackingConfig, track_video  # noqa: E402

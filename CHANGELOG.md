@@ -1,18 +1,15 @@
 # Changelog
 
-## 2026-10-05 — full Experiment Manager v0.5 source release
+## Tinylev Tracker v0.5 — 2026-10-05
 
-- Package experiment/catalog management, still-image center calibration,
-  full/fast tracking, manager annotations and Phase A-D dependencies.
-- Add portable root launchers, dependency list, Windows CI, synthetic tests,
-  source provenance hashes and a reproducible UI screenshot.
-- Replace historical tracking center/scale and analysis center/error defaults
-  with unset values. Require explicit finite calibration for tracking and
-  explicit center/error values for analysis. Clear calibration across experiments.
-- Preserve old root-level v0.1 package under a separate legacy launcher;
-  the existing default launcher now opens the manager.
-- Reuse the existing identical model. Exclude experiment data, private catalogs,
-  notebooks, manuscript files, outputs, caches and local environments.
-
-Tracking formulas and identity algorithms are not merged between versions.
-Existing source workspaces and historical scientific outputs are untouched.
+- Publish the tracking-focused interface with interactive d/psi/phi/Omega plots,
+  spectra, playback and revisioned manual annotations, including CW/CCW labels.
+- Name the application Tinylev Tracker v0.5 and add portable launchers.
+- Start experimental center and pixel-scale calibration unset; require explicit
+  values for inference/tracking and clear values when selecting a different video.
+- Preserve full-frame fast tracking, editable radius/ROI controls, and automatic
+  output-directory numbering.
+- Add real-recording UI screenshots, tests and source provenance.
+- Withdraw the Experiment Manager distribution from the current branch contents;
+  prior commits remain available in Git history. No history is force-rewritten.
+- Preserve the pre-existing legacy core and model unchanged.

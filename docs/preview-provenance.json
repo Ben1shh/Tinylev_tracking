@@ -1,0 +1,16 @@
+{
+  "kind": "actual Qt application screenshots with recorded experimental video and existing tracking CSV",
+  "video_basename": "flir_20260917_151105_part02.mp4",
+  "tracking_sha256": "00c81f97c6684cc37e11c5e27613ea41c2a63c042f483b9da01bfe0a4d3afd51",
+  "frame": 1000,
+  "video_fps": 170.20743517650735,
+  "tracking_rows": 51070,
+  "time_series_visible_seconds": [
+    0,
+    10
+  ],
+  "calibration": "unset; pixel detections and center-independent plots only",
+  "display_changes": "workstation directories replaced with basenames; time-series plot zoomed to 0-10 s",
+  "data_changes": "none; CSV read without relabeling, smoothing or synthetic replacement; plotting uses existing app methods",
+  "raw_inputs_in_repository": false
+}
