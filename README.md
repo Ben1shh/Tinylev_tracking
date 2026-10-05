@@ -7,11 +7,6 @@ interactive spectra, and revisioned manual motion-state annotations.
 
 ![Tinylev Tracker v0.5 preview](docs/images/tracker-preview.png)
 
-*Actual application screenshot viewing `flir_20260917_151105_part02.mp4`, frame
-1000, with its existing tracking CSV. The separation plot is zoomed to 0–10 s.
-Calibration remains unset; the view uses pixel measurements. Full workstation
-paths are hidden. Raw video and CSV files are not uploaded.*
-
 ## Install and run
 
 Use Python 3.12 on Windows. From the repository directory:
@@ -119,20 +114,6 @@ models/best.pt                       trained model
 tests/                               synthetic regression tests
 outputs/                             local derived runs (ignored)
 ```
-
-The current application is the tracking-focused version. Experiment Manager,
-the experiment tree, and Phase A–D are not part of this distribution.
-
-The original repository's `particle_tracking_app/` is retained for compatibility
-with `python run_legacy_tracking.py`; see [legacy documentation](docs/legacy-v0.1.md).
-It keeps its historical defaults. The current tracker uses its matching backend,
-with radius-ordered raw particle selection; the legacy core uses position
-continuity. Do not assume those CSV identity semantics are interchangeable.
-Tracking detections alone do not establish persistent physical identity.
-
-Only the requested screenshots of experimental data are included. Raw videos,
-CSV datasets, local catalogs, manuscripts, credentials and virtual environments
-are not included. Screenshot provenance is in [docs/preview-provenance.json](docs/preview-provenance.json).
 
 ## Validation
 
