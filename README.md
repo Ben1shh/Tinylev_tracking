@@ -1,108 +1,120 @@
-# Tinylev Tracking v0.1
+# Tinylev Experiment Manager v0.5
 
 NYU CSMR Grier Lab
 
-Local PyQt desktop app for the trained single-class `particle` YOLO segmentation model.
+Desktop application for YOLO particle tracking, experiment organization,
+single-particle trap-center calibration and exploratory trajectory analysis.
+This is the full **Experiment Manager v0.5**, not the Light UI.
 
-## Setup
+![Experiment Manager v0.5 preview](docs/images/experiment-manager-preview.png)
 
-1. Open PowerShell and go to the app folder:
+*Application screenshot with a synthetic demonstration catalog. No experimental
+measurements or raw video are shown; calibration starts unset.*
 
-```powershell
-cd "C:\Tinylev Tracking v0.1 Source"
-```
+## Install and run (Windows)
 
-2. Create and activate a virtual environment:
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
-
-If PowerShell blocks activation, run this once and activate again:
+Use Python 3.12, from the repository directory:
 
 ```powershell
-Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe run_experiment_manager.py
 ```
 
-3. Install packages:
+After installation, double-click `run_experiment_manager.bat`.
+`run_particle_tracking_app.py` starts the same manager. No PowerShell activation
+or execution-policy changes are required. PyTorch is installed as an Ultralytics
+dependency; select a compatible PyTorch build if GPU acceleration is needed.
 
-```powershell
-python -m pip install --upgrade pip
-pip install PyQt5 opencv-python matplotlib pandas numpy ultralytics
-```
+The existing `models/best.pt` is reused. SHA-256:
+`28e233fec3cd9f420ed8268b87a9d236a654e2355a034322005f6822788a233d`.
 
-4. *Optional NVIDIA GPU setup:
+## Calibration: no assumed experimental values
 
-```powershell
-pip uninstall -y torch torchvision
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
-```
+**Trap X, Trap Y and Pixels/mm start as `Not set`.** Enter measured values for
+this experiment, load its verified config, or use single-particle image
+calibration to estimate a center. Preview inference and batch tracking require
+finite center coordinates and a positive pixel scale. Unset values serialize
+as JSON `null`; an explicitly entered zero center coordinate is valid.
+Switching to an experiment without calibration clears the previous values.
 
-5. Test dependencies:
+Analysis also has no default trap center or center standard errors. Phase A-B
+requires explicit center coordinates and x/y standard errors; unknown errors
+are not silently replaced with zero. Image-calibration standard errors do not
+automatically include bead-to-bead or batch systematic uncertainty.
+Enter externally measured x/y standard errors in the experiment record dialog,
+or link the corresponding image-calibration output. Leave unknown errors blank.
 
-```powershell
-python -c "import torch, ultralytics, PyQt5, cv2, matplotlib, pandas, numpy; print('ok'); print('cuda', torch.cuda.is_available())"
-```
-
-## Run
-
-```powershell
-python run_particle_tracking_app.py
-```
-
-Bundled model:
-
-- `models\best.pt`
+Loading an older config preserves its explicit numbers. Check its batch and
+provenance before use. Detection filters (ROI, radius and confidence) are
+software settings in pixels, not physical calibration; inspect each recording.
 
 ## Workflow
 
-1. Choose a video.
-2. Confirm the model path points to `models\best.pt` or select another `.pt` model.
-3. Set Calibration: Trap X, Trap Y, Pixels/mm.
-4. Use Preview current frame.
-5. Use Run batch tracking.
-6. Results are written to the selected Output folder.
+1. Start with an empty experiment catalog.
+2. Add experiments and videos through **Experiment**. The catalog stores
+   references and does not move source files.
+3. Select the model, supply calibration, check detection settings and preview.
+4. Run tracking. Fast mode keeps every selected inference frame and full CSV
+   while disabling annotated-video/debug exports. Normal mode supports both.
+5. Link tracking and calibration outputs to the experiment. Run Phase A-B.
+6. Select intervals for Phase C-D and review labels in the annotation tab.
 
-Each batch run writes:
+Tracking writes `tracking.csv` and `config.json`. **Choose a new empty tracking
+folder for every run:** the original full-manager writer can replace files in
+a reused output folder. Never choose a raw-data folder for output. Calibration
+and experiment-analysis outputs use separate versioned directories.
 
-- `config.json`
-- `tracking.csv`
-- optional `annotated_video_frames_<start>_to_<end>.mp4`
-- optional `debug_frames\`
+| Phase | Function |
+|---|---|
+| A | Input existence, schema, frame counts, hashes and provenance |
+| B | Identity/QC processing and observational state candidates |
+| C | Exploratory phase-locked orbit-center fit |
+| D | Temporal half holdouts and leave-one-complete-cycle-out checks |
 
-## Plot Options
+Phase D fixes training parameters during validation and excludes invalid gaps.
+A fitted center is not an independent trapping-center calibration. Candidate
+states and scores do not prove torus, chaos or a theoretical limit-cycle radius.
+Cross-burst and independent static/slow validation remain outside Phase D core.
 
-- CM trap distance
-- CM XY
-- CM XY trajectory
-- Orientation
-- Angular velocity
-- Relative angle phi
-- Spin state timeline
-- Particle XY
-- Confidence
+## Layout
 
-## Particle Identity Tracking
+```text
+run_experiment_manager.py             current full application
+analysis/particle_tracking_app_v0_1/  v0.5 manager and matching tracking core
+analysis/dynamic_pair_analysis/       analysis dependencies
+models/best.pt                       existing trained model
+raw_data/                            optional local videos (ignored)
+data/experiment_catalog.json         local catalog (created on save; ignored)
+outputs/                             derived runs (ignored)
+```
 
-For two-particle tracking, `particle_1_*` and `particle_2_*` are persistent identities. The first tracked frame initializes identities from left to right, and later frames keep each identity by nearest-position continuity from the previous tracked frame. Size-based fields such as `small_*` and `large_*` are measurements only and no longer decide particle identity.
+The `v0_1` directory name is retained for import compatibility; its manager is
+v0.5. No experimental datasets, local catalogs, notebooks, manuscripts,
+credentials or virtual environments are included.
 
-The CSV also includes `small_particle_id` and `large_particle_id` so size changes can be inspected without identity swapping.
+## Legacy version and CSV compatibility
 
-## Spin / Angle CSV Columns
+The prior root `particle_tracking_app/` is preserved and runs with
+`python run_legacy_tracking.py`. Its documentation is saved in
+[docs/legacy-v0.1.md](docs/legacy-v0.1.md). It retains historical behavior and
+defaults; use the manager entry point for the new unset calibration defaults.
 
-The tracking CSV includes:
+The cores have different identity and CSV behavior. The legacy repository core
+keeps persistent particle identities by position continuity. The manager's raw
+two-particle selection is radius ordered; its separate analysis pipeline
+performs continuity/QC cleanup. Radius order is not guaranteed physical identity.
+Inspect schemas before combining outputs from different versions.
 
-- `psi_rad`
-- `psi_unwrapped_rad`
-- `theta_rad`
-- `phi_rad`
-- `omega_rad_s`
-- `spin_freq_hz`
-- `spin_state`
+## Tests
 
-Tracking failed frames are kept in the CSV and receive `NaN` for unavailable numeric values.
+Synthetic tests require no experimental videos or network access:
 
-## Notes
+```powershell
+$env:QT_QPA_PLATFORM = 'offscreen'
+.\.venv\Scripts\python.exe -m unittest discover -s analysis/particle_tracking_app_v0_1/tests -v
+.\.venv\Scripts\python.exe -m unittest discover -s analysis/dynamic_pair_analysis/tests -v
+```
 
-If the GUI opens but tracking fails with an `ultralytics` or `torch` import error, launch the app with the same Python interpreter that successfully runs YOLO training/inference in PyCharm or Jupyter.
+Windows CI runs the same suites. See [docs/VALIDATION.md](docs/VALIDATION.md),
+[CHANGELOG.md](CHANGELOG.md) and the source hash manifest in `docs/`.
